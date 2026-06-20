@@ -19,9 +19,13 @@ const newsreader = Newsreader({
 });
 
 export const metadata: Metadata = {
-  title: "The case — a second opinion",
+  title: "Auditor — a second opinion on money decisions",
   description:
-    "Two independent AI models answer the same money question, broken into facets. No verdict, no recommendation. You are the only judge.",
+    "Auditor gives you a second opinion on an everyday money decision by having two AI models argue both sides independently, with checkable sources. It never decides for you.",
+};
+
+export const viewport = {
+  themeColor: "#f0ebe3",
 };
 
 export default function RootLayout({

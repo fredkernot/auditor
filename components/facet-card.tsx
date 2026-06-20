@@ -1,19 +1,32 @@
 import type { Facet } from "@/lib/case"
 import { DebaterView } from "@/components/debater-view"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
 
-export function FacetCard({ facet }: { facet: Facet }) {
+export function FacetCard({ facet, index }: { facet: Facet; index: number }) {
   return (
-    <article className="rounded-lg border border-border bg-card p-6 shadow-sm sm:p-8">
-      <h2 className="text-balance font-serif text-xl leading-snug text-card-foreground sm:text-2xl">
-        {facet.question}
-      </h2>
+    <Card className="gap-0 overflow-hidden py-0">
+      <CardHeader className="gap-2 border-b border-border bg-muted/40 px-6 py-5 [.border-b]:pb-5">
+        <span className="font-mono text-xs text-muted-foreground">{`Facet ${index + 1}`}</span>
+        <CardTitle className="text-pretty font-serif text-lg font-normal leading-snug text-foreground">
+          {facet.question}
+        </CardTitle>
+      </CardHeader>
 
-      <div className="mt-6 flex flex-col gap-8 md:flex-row md:gap-6">
-        <DebaterView label="Model A" view={facet.debaterA} question={facet.question} />
-        <div className="hidden w-px shrink-0 self-stretch bg-border md:block" aria-hidden="true" />
-        <div className="h-px w-full bg-border md:hidden" aria-hidden="true" />
-        <DebaterView label="Model B" view={facet.debaterB} question={facet.question} />
-      </div>
-    </article>
+      <CardContent className="px-6 py-6">
+        <div className="flex flex-col gap-6 md:flex-row md:gap-0">
+          <div className="flex md:flex-1 md:pr-8">
+            <DebaterView label="Model A" view={facet.debaterA} />
+          </div>
+
+          <Separator orientation="horizontal" className="md:hidden" />
+          <Separator orientation="vertical" className="hidden h-auto md:block" />
+
+          <div className="flex md:flex-1 md:pl-8">
+            <DebaterView label="Model B" view={facet.debaterB} />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   )
 }

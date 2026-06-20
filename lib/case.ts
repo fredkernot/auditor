@@ -28,6 +28,9 @@ export type CaseFile = {
   triage: Triage
   facets: Facet[]
   userVerdict: string | null
+  // Present only when the backend failed to build a case. The UI shows this
+  // plainly with a retry instead of rendering a debate.
+  error?: string
 }
 
 // Derive a readable label from a source URL, since the data has no title field.
