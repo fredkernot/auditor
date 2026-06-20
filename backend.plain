@@ -1,0 +1,85 @@
+---
+description: Auditor backend. Two AI debaters answer the same household-money sub-questions in parallel, then code pairs both sides for the user to judge. No model ever declares a verdict or an agreement.
+---
+
+***definitions***
+
+- :App: is the Next.js App Router TypeScript application exposing one API route. There is no AI verdict anywhere in :App:.
+
+- :Topic: is the user's household-money question, for example "Should I overpay my mortgage or put the money into savings?".
+
+- :Allowlist: is the fixed set of permitted source hosts: moneyhelper.org.uk, gov.uk, ofgem.gov.uk, register.fca.org.uk, citizensadvice.org.uk, moneysavingexpert.com, bankofengland.co.uk. No other host may appear in any output.
+
+- :Facet: is one checkable two-sided sub-question that a :Topic: breaks into. Each :Facet: has a stable id (f1, f2 and so on) and a question string. Both debaters answer the same :Facet: list by id, so their answers pair without any AI matching step.
+
+- :AgendaSetter: is a single cheap model call that turns a :Topic: into a list of :Facet:. It only writes the sub-questions. It never answers them and never rules on truth or agreement.
+
+- :DebaterA: is the first debater model, reached through OpenRouter, using the slug for Google Gemini 2.5 Flash Lite. It answers every :Facet: independently.
+
+- :DebaterB: is the second debater model from a different company, reached through OpenRouter, using a DeepSeek chat slug. It answers every :Facet: independently and never sees :DebaterA: output.
+
+- :Formatter: is deterministic application code, not a model. It enforces the :Allowlist:, pairs :DebaterA: and :DebaterB: answers by :Facet: id, and assembles the response. It produces no winner, no verdict, and no agreement label.
+
+- :CaseFile: is the JSON object :App: returns: the :Topic:, the triage result, the paired :Facet: answers from both debaters with their sources, and a userVerdict field fixed to null.
+
+***implementation reqs***
+
+- :App: is built with Next.js App Router and TypeScript. The route source file is "app/api/case/route.ts" and handles HTTP POST.
+
+- Model calls use the Vercel AI SDK with the OpenRouter provider and a single OpenRouter API key read from an environment variable. The two debater slugs are configured in one place so they can be changed without touching logic.
+
+- Structured model output is produced with the Vercel AI SDK generateObject function, with schemas defined using the zod library.
+
+- The :Allowlist: lives in its own module "lib/allowlist.ts" as a pure function so it can be unit tested in isolation.
+
+***functional specs***
+
+- :App: accepts a POST whose JSON body contains a single string field "topic". If "topic" is missing, empty, or longer than a sensible limit, respond with HTTP 400 and a short error message and do nothing else.
+
+  ***acceptance tests***
+
+  - A POST with a valid "topic" string returns HTTP 200.
+
+  - A POST with a missing or empty "topic" returns HTTP 400.
+
+- Triage the :Topic: into one of "debatable", "unknowable", or "needs-a-professional" using a single cheap model call. If the route is not "debatable", return a :CaseFile: containing only the :Topic:, the route, and a short plain English reason, and run no debate.
+
+  ***acceptance tests***
+
+  - A clearly debatable money question is routed "debatable" and proceeds to a debate.
+
+  - A pure prediction with nothing checkable is routed "unknowable" and returns early with a reason and no debate.
+
+- The :AgendaSetter: turns a debatable :Topic: into between three and five :Facet:, each a two-sided checkable sub-question with a unique id. The :AgendaSetter: must not answer any :Facet:.
+
+  ***acceptance tests***
+
+  - The agenda contains between three and five facets, each with a unique id and a non-empty question.
+
+- :DebaterA: and :DebaterB: answer the full :Facet: list in parallel, started together and awaited with a settle-all strategy so one debater failing does not abort the other. For every :Facet: id each returns a short view, one or two sources, and a confidence of "low", "medium", or "high". Each is instructed to cite only :Allowlist: hosts and to write "no reliable source" rather than invent one. If one debater fails, continue with the other and mark the missing side unavailable.
+
+  ***acceptance tests***
+
+  - If one debater call throws, the route still returns a :CaseFile: with the surviving debater answers and the other side marked unavailable.
+
+- The :Formatter: enforces the :Allowlist: on every source from both debaters: any source whose URL host is not on the :Allowlist: is dropped. Surviving links are checked with a lightweight request and any that do not resolve are dropped. If a view for a :Facet: ends with no sources, that view is flagged as missing its sources.
+
+  ***acceptance tests***
+
+  - A source on a host that is not on the :Allowlist: is removed from the output.
+
+  - A view left with zero sources after filtering is flagged, not silently emptied.
+
+- The :Formatter: pairs :DebaterA: and :DebaterB: answers by :Facet: id and assembles the :CaseFile:. No agreement, disagreement, winner, or verdict is computed by any model or by code. The "userVerdict" field is always null.
+
+  ***acceptance tests***
+
+  - Every facet in the :CaseFile: carries both debater views side by side under the same id.
+
+  - The :CaseFile: contains no field expressing a verdict or a computed agreement, and "userVerdict" is null.
+
+- :App: returns the :CaseFile: as an HTTP 200 JSON response. If both debaters fail, return HTTP 200 with an "error" field the UI can display, never an unhandled 500.
+
+  ***acceptance tests***
+
+  - When both debaters fail, the response is HTTP 200 with an "error" field, not a 500.

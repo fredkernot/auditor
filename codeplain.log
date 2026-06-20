@@ -1,0 +1,43 @@
+[00:00:00] INFO codeplain: -------------------------------------
+           Module: backend
+           Rendering functionality 1:
+           - :App: accepts a POST whose JSON body contains a single string field "topic". If "topic" is missing, empty, or longer than a sensible limit, respond with HTTP 400 and a short error message and do nothing else.
+           -------------------------------------
+[00:00:09] INFO codeplain: Refactoring the generated code...
+[00:00:10] INFO codeplain: -------------------------------------
+           Module: backend
+           Rendering functionality 2:
+           - Triage the :Topic: into one of "debatable", "unknowable", or "needs-a-professional" using a single cheap model call. If the route is not "debatable", return a :CaseFile: containing only the :Topic:, the route, and a short plain English reason, and run no debate.
+           -------------------------------------
+[00:00:16] INFO codeplain: Refactoring the generated code...
+[00:00:17] INFO codeplain: -------------------------------------
+           Module: backend
+           Rendering functionality 3:
+           - The :AgendaSetter: turns a debatable :Topic: into between three and five :Facet:, each a two-sided checkable sub-question with a unique id. The :AgendaSetter: must not answer any :Facet:.
+           -------------------------------------
+[00:00:29] INFO codeplain: Refactoring the generated code...
+[00:00:30] INFO codeplain: -------------------------------------
+           Module: backend
+           Rendering functionality 4:
+           - :DebaterA: and :DebaterB: answer the full :Facet: list in parallel, started together and awaited with a settle-all strategy so one debater failing does not abort the other. For every :Facet: id each returns a short view, one or two sources, and a confidence of "low", "medium", or "high". Each is instructed to cite only :Allowlist: hosts and to write "no reliable source" rather than invent one. If one debater fails, continue with the other and mark the missing side unavailable.
+           -------------------------------------
+[00:00:49] INFO codeplain: Refactoring the generated code...
+[00:00:50] INFO codeplain: -------------------------------------
+           Module: backend
+           Rendering functionality 5:
+           - The :Formatter: enforces the :Allowlist: on every source from both debaters: any source whose URL host is not on the :Allowlist: is dropped. Surviving links are checked with a lightweight request and any that do not resolve are dropped. If a view for a :Facet: ends with no sources, that view is flagged as missing its sources.
+           -------------------------------------
+[00:00:57] INFO codeplain: Refactoring the generated code...
+[00:00:58] INFO codeplain: -------------------------------------
+           Module: backend
+           Rendering functionality 6:
+           - The :Formatter: pairs :DebaterA: and :DebaterB: answers by :Facet: id and assembles the :CaseFile:. No agreement, disagreement, winner, or verdict is computed by any model or by code. The "userVerdict" field is always null.
+           -------------------------------------
+[00:01:11] INFO codeplain: Refactoring the generated code...
+[00:01:12] INFO codeplain: -------------------------------------
+           Module: backend
+           Rendering functionality 7:
+           - :App: returns the :CaseFile: as an HTTP 200 JSON response. If both debaters fail, return HTTP 200 with an "error" field the UI can display, never an unhandled 500.
+           -------------------------------------
+[00:01:23] INFO codeplain: Refactoring the generated code...
+[00:01:24] INFO codeplain: [#79FC96]Render of module backend completed successfully.[/#79FC96]
