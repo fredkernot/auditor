@@ -1,65 +1,160 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { useState } from "react"
+import { ArrowLeftIcon, RotateCwIcon } from "lucide-react"
+import type { CaseFile } from "@/lib/case"
+import { verdictOptions } from "@/lib/case"
+import { getCase } from "@/lib/get-case"
+import { Button } from "@/components/ui/button"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { InputView } from "@/components/input-view"
+import { LoadingView } from "@/components/loading-view"
+import { FacetCard } from "@/components/facet-card"
+import { Verdict } from "@/components/verdict"
+
+type Status = "input" | "loading" | "result"
+
+export default function Page() {
+  const [status, setStatus] = useState<Status>("input")
+  const [topic, setTopic] = useState("")
+  const [result, setResult] = useState<CaseFile | null>(null)
+  const [choice, setChoice] = useState<string | null>(null)
+
+  async function runCase(nextTopic: string) {
+    setTopic(nextTopic)
+    setChoice(null)
+    setResult(null)
+    setStatus("loading")
+    try {
+      const data = await getCase(nextTopic)
+      setResult(data)
+    } catch {
+      setResult({
+        topic: nextTopic,
+        cached: false,
+        triage: { route: "error", reason: "" },
+        facets: [],
+        userVerdict: null,
+        error: "Something went wrong while building your case. Please try again.",
+      })
+    }
+    setStatus("result")
+  }
+
+  function reset() {
+    setStatus("input")
+    setResult(null)
+    setChoice(null)
+    setTopic("")
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="flex flex-1 flex-col px-6 py-12 sm:py-20">
+      <div className="mx-auto w-full max-w-3xl flex-1">
+        {status === "input" ? <InputView onSubmit={runCase} /> : null}
+
+        {status === "loading" ? <LoadingView topic={topic} /> : null}
+
+        {status === "result" && result ? (
+          <ResultView
+            result={result}
+            choice={choice}
+            onChoose={setChoice}
+            onReset={reset}
+            onRetry={() => runCase(result.topic)}
+          />
+        ) : null}
+      </div>
+
+      <footer className="mx-auto mt-16 w-full max-w-3xl border-t border-border pt-6">
+        <p className="text-center text-sm text-muted-foreground">
+          This is guidance, not regulated financial advice.
+        </p>
+      </footer>
+    </main>
+  )
+}
+
+function ResultView({
+  result,
+  choice,
+  onChoose,
+  onReset,
+  onRetry,
+}: {
+  result: CaseFile
+  choice: string | null
+  onChoose: (option: string) => void
+  onReset: () => void
+  onRetry: () => void
+}) {
+  const askAnother = (
+    <Button variant="ghost" onClick={onReset} className="text-muted-foreground hover:text-foreground">
+      <ArrowLeftIcon data-icon="inline-start" />
+      Ask another question
+    </Button>
+  )
+
+  // 1. Hard error — never show a blank screen.
+  if (result.error) {
+    return (
+      <div className="mx-auto flex max-w-xl flex-col items-center gap-6">
+        <Alert variant="destructive">
+          <AlertTitle>We couldn&apos;t build your case</AlertTitle>
+          <AlertDescription>{result.error}</AlertDescription>
+        </Alert>
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <Button onClick={onRetry}>
+            <RotateCwIcon data-icon="inline-start" />
+            Try again
+          </Button>
+          {askAnother}
+        </div>
+      </div>
+    )
+  }
+
+  // 2. Refusal — triage says this is not a debatable question.
+  if (result.triage.route !== "debatable") {
+    return (
+      <div className="mx-auto flex max-w-xl flex-col items-center gap-8 text-center">
+        <div className="flex flex-col gap-3">
+          <span className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+            Auditor is sitting this one out
+          </span>
+          <p className="text-pretty font-serif text-2xl font-normal leading-snug text-foreground">
+            {result.triage.reason}
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+        {askAnother}
+      </div>
+    )
+  }
+
+  // 3. The case file.
+  return (
+    <div className="flex flex-col gap-10">
+      <header className="flex flex-col gap-3">
+        <span className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+          The case
+        </span>
+        <h1 className="text-balance font-serif text-3xl font-normal leading-tight text-foreground sm:text-4xl">
+          {result.topic}
+        </h1>
+        <p className="text-pretty text-base leading-relaxed text-muted-foreground">
+          {result.triage.reason}
+        </p>
+      </header>
+
+      <div className="flex flex-col gap-5">
+        {result.facets.map((facet, index) => (
+          <FacetCard key={facet.facetId} facet={facet} index={index} />
+        ))}
+      </div>
+
+      <Verdict options={verdictOptions(result.topic)} choice={choice} onChoose={onChoose} />
+
+      <div className="flex justify-center">{askAnother}</div>
     </div>
-  );
+  )
 }

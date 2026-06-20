@@ -1,0 +1,91 @@
+{
+  "topic": "Should I overpay my mortgage or put the money into savings?",
+  "cached": true,
+  "triage": {
+    "route": "debatable",
+    "reason": "This compares current mortgage interest rates against savings rates and tax allowances, which are checkable facts rather than a prediction or regulated advice."
+  },
+  "facets": [
+    {
+      "facetId": "f1",
+      "question": "Do savings interest rates currently beat the interest rate on a typical mortgage?",
+      "debaterA": {
+        "answer": "For most borrowers the mortgage rate is higher than the rate on easy-access savings, so the core test is simple: if your savings rate cannot beat your mortgage rate, overpaying saves you more than saving does.",
+        "confidence": "high",
+        "sources": [
+          { "url": "https://www.moneysavingexpert.com/mortgages/mortgages-vs-savings/", "verified": false }
+        ],
+        "missingSources": false
+      },
+      "debaterB": {
+        "answer": "Savings rates and mortgage rates both move with the Bank of England Bank Rate, so the gap between them shifts over time; the comparison must be made against your own current deal, not a general rule.",
+        "confidence": "medium",
+        "sources": [
+          { "url": "https://www.bankofengland.co.uk/monetary-policy/the-interest-rate-bank-rate", "verified": true }
+        ],
+        "missingSources": false
+      }
+    },
+    {
+      "facetId": "f2",
+      "question": "How does overpaying affect the emergency cash you can get to quickly compared with keeping savings?",
+      "debaterA": {
+        "answer": "Money overpaid into a mortgage is hard to get back unless you have a flexible or offset deal, so guidance is to hold three to six months of essential outgoings in instant-access savings before overpaying.",
+        "confidence": "high",
+        "sources": [
+          { "url": "https://www.moneyhelper.org.uk/en/savings/types-of-savings/emergency-savings-how-much-is-enough", "verified": false }
+        ],
+        "missingSources": false
+      },
+      "debaterB": {
+        "answer": "Overpaying reduces the interest you owe and can shorten the term, but the cash stops being liquid; weighing the interest saved against lost access is the central trade-off.",
+        "confidence": "medium",
+        "sources": [
+          { "url": "https://www.moneyhelper.org.uk/en/homes/buying-a-home/should-you-pay-off-your-mortgage-early", "verified": false }
+        ],
+        "missingSources": false
+      }
+    },
+    {
+      "facetId": "f3",
+      "question": "What are the tax implications of savings interest versus overpaying the mortgage?",
+      "debaterA": {
+        "answer": "Savings interest is taxable once it exceeds your Personal Savings Allowance (1,000 pounds for basic-rate, 500 pounds for higher-rate taxpayers), which can reduce the real return from saving.",
+        "confidence": "high",
+        "sources": [
+          { "url": "https://www.gov.uk/apply-tax-free-interest-on-savings", "verified": true }
+        ],
+        "missingSources": false
+      },
+      "debaterB": {
+        "answer": "Mortgage interest is not tax-deductible for owner-occupiers, so overpaying gives a guaranteed, tax-free saving on interest, whereas savings interest above the allowance is taxed.",
+        "confidence": "high",
+        "sources": [
+          { "url": "https://www.moneyhelper.org.uk/en/savings/types-of-savings/tax-on-savings-and-investments", "verified": false }
+        ],
+        "missingSources": false
+      }
+    },
+    {
+      "facetId": "f4",
+      "question": "What are the non-financial trade-offs, such as peace of mind versus having a cash buffer?",
+      "debaterA": {
+        "answer": "Clearing mortgage debt earlier can reduce long-term financial stress and the total interest paid, which many people value beyond the pure numbers.",
+        "confidence": "medium",
+        "sources": [
+          { "url": "https://www.moneyhelper.org.uk/en/homes/buying-a-home/should-you-pay-off-your-mortgage-early", "verified": false }
+        ],
+        "missingSources": false
+      },
+      "debaterB": {
+        "answer": "A cash buffer provides immediate security against job loss or unexpected bills, which an overpaid mortgage cannot, so the right balance depends on how stable your income is.",
+        "confidence": "medium",
+        "sources": [
+          { "url": "https://www.moneyhelper.org.uk/en/savings/types-of-savings/emergency-savings-how-much-is-enough", "verified": false }
+        ],
+        "missingSources": false
+      }
+    }
+  ],
+  "userVerdict": null
+}
