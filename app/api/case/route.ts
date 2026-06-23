@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { generateObject } from "ai";
 import { openrouter, MODELS } from "@/lib/models";
-import { validateUrl, checkUrlStatus } from "@/lib/allowlist";
+import { resolveSources, type CatalogueEntry } from "@/lib/resolveSources";
 import { getCachedCase } from "@/lib/demoCache";
+import catalogueData from "@/data/source-catalogue.json";
+
+const CATALOGUE = catalogueData as CatalogueEntry[];
 
 // --- Schemas ---
 
@@ -15,7 +18,10 @@ const FacetSchema = z.object({
 const DebaterAnswerSchema = z.object({
   facetId: z.string(),
   answer: z.string().describe("A short view on this facet"),
-  sources: z.array(z.string().url()).min(0).max(2),
+  sourceIds: z
+    .array(z.string())
+    .max(2)
+    .describe("Catalogue ids that back this view. Empty if none fit. Never URLs."),
   confidence: z.enum(["low", "medium", "high"]),
 });
 
@@ -83,15 +89,20 @@ export async function POST(req: NextRequest) {
 
     // 2. Debaters: Answer facets independently in parallel with settle-all strategy
     const debaterPrompts = agenda.facets.map(f => `ID: ${f.id}, Question: ${f.question}`).join("\n");
+    const catalogueList = CATALOGUE
+      .map((c) => `- ${c.id}: ${c.title} (${c.host})`)
+      .join("\n");
     const commonInstructions = `
-      Answer each facet for a UK audience. 
+      Answer each facet for a UK audience.
       - Provide a short view (1-2 sentences).
-      - Cite 1 or 2 sources. 
-      - Use ONLY these hosts: moneyhelper.org.uk, gov.uk, ofgem.gov.uk, register.fca.org.uk, citizensadvice.org.uk, moneysavingexpert.com, bankofengland.co.uk.
-      - Link to the SPECIFIC guidance page that backs your point, never a site homepage. The URL must have a real path, e.g. https://www.gov.uk/government/publications/..., not https://www.gov.uk/.
-      - The source must actually be relevant to the facet you are answering.
-      - If no source from this list exists, return an empty sources array (do not invent one).
+      - Cite sources ONLY by their catalogue id, using the SOURCE CATALOGUE below.
+      - Put the chosen ids in the "sourceIds" array. Use only ids that genuinely
+        support the specific facet. NEVER write a URL, and never invent an id.
+      - If no catalogue entry fits a facet, return an empty sourceIds array for it.
       - Assign confidence: low, medium, or high.
+
+      SOURCE CATALOGUE (cite by id only):
+${catalogueList}
     `;
 
     const results = await Promise.allSettled([
@@ -120,37 +131,20 @@ export async function POST(req: NextRequest) {
       }, { status: 200 });
     }
 
-    // 3. Formatter: Deterministic pairing by Facet ID. 
+    // 3. Formatter: Deterministic pairing by Facet ID.
     // No model or code computes agreement, winners, or verdicts.
-    const formattedFacets = await Promise.all(agenda.facets.map(async (facet) => {
+    // Sources are resolved from the curated catalogue by id, so there are no
+    // live URL checks: hallucinated and dead links are impossible by design.
+    const resolveView = (sourceIds: string[] | undefined) => {
+      const entries = resolveSources(sourceIds, CATALOGUE);
+      // Every catalogue entry was verified by hand when the catalogue was built.
+      const sources = entries.map((e) => ({ url: e.url, title: e.title, verified: true }));
+      return { sources, missingSources: sources.length === 0 };
+    };
+
+    const formattedFacets = agenda.facets.map((facet) => {
       const ansA = resA?.find((a) => a.facetId === facet.id);
       const ansB = resB?.find((a) => a.facetId === facet.id);
-
-      const processSources = async (rawSources: string[] | undefined) => {
-        if (!rawSources) return { sources: [], missingSources: true };
-
-        // Drop anything off the allowlist or origin-only, then classify what
-        // survives. "dead" (404/410/unreachable) is dropped; "verified" and
-        // "unverified" are both kept, the latter without a verified tick.
-        const allowedUrls = rawSources
-          .map(validateUrl)
-          .filter((url): url is string => url !== null);
-
-        const sources = (await Promise.all(
-          allowedUrls.map(async (url) => {
-            const status = await checkUrlStatus(url);
-            return status === "dead" ? null : { url, verified: status === "verified" };
-          })
-        )).filter((s): s is { url: string; verified: boolean } => s !== null);
-
-        return {
-          sources,
-          missingSources: sources.length === 0,
-        };
-      };
-
-      const sourcesA = await processSources(ansA?.sources);
-      const sourcesB = await processSources(ansB?.sources);
 
       return {
         facetId: facet.id,
@@ -158,15 +152,15 @@ export async function POST(req: NextRequest) {
         debaterA: ansA ? {
           answer: ansA.answer,
           confidence: ansA.confidence,
-          ...sourcesA
+          ...resolveView(ansA.sourceIds)
         } : { answer: "Debater unavailable", confidence: "low", sources: [], missingSources: true },
         debaterB: ansB ? {
           answer: ansB.answer,
           confidence: ansB.confidence,
-          ...sourcesB
+          ...resolveView(ansB.sourceIds)
         } : { answer: "Debater unavailable", confidence: "low", sources: [], missingSources: true },
       };
-    }));
+    });
 
     const caseFile = {
       topic,

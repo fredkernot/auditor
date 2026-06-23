@@ -1,6 +1,9 @@
 export type Source = {
   url: string
   verified: boolean
+  // Human-readable page title from the source catalogue. Optional so older
+  // payloads (e.g. the cached demo) that only carry a url still render.
+  title?: string
 }
 
 export type DebaterView = {

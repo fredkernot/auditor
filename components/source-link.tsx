@@ -13,7 +13,7 @@ export function SourceLink({ source }: { source: Source }) {
         className="inline-flex items-baseline gap-1.5 break-all text-sm leading-relaxed text-clay underline decoration-clay/30 underline-offset-4 transition-colors hover:decoration-clay"
       >
         <ExternalLinkIcon className="size-3.5 shrink-0 translate-y-0.5" aria-hidden="true" />
-        {sourceLabel(source.url)}
+        {source.title ?? sourceLabel(source.url)}
       </a>
       {source.verified ? (
         <Badge variant="secondary" className="shrink-0 text-[0.65rem] uppercase tracking-wide">

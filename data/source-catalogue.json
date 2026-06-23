@@ -1,0 +1,122 @@
+[
+  {
+    "id": "mse-overpay-vs-save",
+    "host": "moneysavingexpert.com",
+    "title": "Should I overpay my mortgage? (mortgage vs savings)",
+    "url": "https://www.moneysavingexpert.com/mortgages/mortgages-vs-savings/"
+  },
+  {
+    "id": "boe-bank-rate",
+    "host": "bankofengland.co.uk",
+    "title": "The interest rate (Bank Rate)",
+    "url": "https://www.bankofengland.co.uk/monetary-policy/the-interest-rate-bank-rate"
+  },
+  {
+    "id": "mh-emergency-fund",
+    "host": "moneyhelper.org.uk",
+    "title": "Emergency savings - how much is enough?",
+    "url": "https://www.moneyhelper.org.uk/en/savings/types-of-savings/emergency-savings-how-much-is-enough"
+  },
+  {
+    "id": "mh-pay-off-mortgage-early",
+    "host": "moneyhelper.org.uk",
+    "title": "Should you pay off your mortgage early?",
+    "url": "https://www.moneyhelper.org.uk/en/homes/buying-a-home/should-you-pay-off-your-mortgage-early"
+  },
+  {
+    "id": "gov-savings-interest-tax",
+    "host": "gov.uk",
+    "title": "Tax on savings interest (Personal Savings Allowance)",
+    "url": "https://www.gov.uk/apply-tax-free-interest-on-savings"
+  },
+  {
+    "id": "mh-tax-on-savings",
+    "host": "moneyhelper.org.uk",
+    "title": "How tax on savings and investments works",
+    "url": "https://www.moneyhelper.org.uk/en/savings/types-of-savings/tax-on-savings-and-investments"
+  },
+  {
+    "id": "gov-isa-overview",
+    "host": "gov.uk",
+    "title": "Individual Savings Accounts (ISAs)",
+    "url": "https://www.gov.uk/individual-savings-accounts"
+  },
+  {
+    "id": "gov-isa-how-they-work",
+    "host": "gov.uk",
+    "title": "How ISAs work",
+    "url": "https://www.gov.uk/individual-savings-accounts/how-isas-work"
+  },
+  {
+    "id": "mh-cash-isas",
+    "host": "moneyhelper.org.uk",
+    "title": "What are Cash ISAs?",
+    "url": "https://www.moneyhelper.org.uk/en/savings/types-of-savings/cash-isas"
+  },
+  {
+    "id": "mse-overpay-calculator",
+    "host": "moneysavingexpert.com",
+    "title": "Mortgage overpayment calculator (incl. 10% annual limit)",
+    "url": "https://www.moneysavingexpert.com/mortgages/mortgage-overpayment-calculator/"
+  },
+  {
+    "id": "mh-mortgage-rate-options",
+    "host": "moneyhelper.org.uk",
+    "title": "Understanding mortgages and interest rates (fixed vs variable)",
+    "url": "https://www.moneyhelper.org.uk/en/homes/buying-a-home/mortgage-interest-rate-options"
+  },
+  {
+    "id": "ca-which-debts-first",
+    "host": "citizensadvice.org.uk",
+    "title": "Work out which debts to deal with first (priority debts)",
+    "url": "https://www.citizensadvice.org.uk/debt-and-money/help-with-debt/dealing-with-your-debts/work-out-which-debts-to-deal-with-first/"
+  },
+  {
+    "id": "ca-pay-off-credit-early",
+    "host": "citizensadvice.org.uk",
+    "title": "Paying off a credit agreement early",
+    "url": "https://www.citizensadvice.org.uk/debt-and-money/borrowing-money/paying-off-a-credit-agreement-early/"
+  },
+  {
+    "id": "mse-pay-off-credit-cards",
+    "host": "moneysavingexpert.com",
+    "title": "How to pay off credit card debt more quickly",
+    "url": "https://www.moneysavingexpert.com/credit-cards/how-to-pay-off-credit-cards/"
+  },
+  {
+    "id": "mse-debt-help",
+    "host": "moneysavingexpert.com",
+    "title": "Free debt advice: what to do and where to get help",
+    "url": "https://www.moneysavingexpert.com/loans/debt-help-plan/"
+  },
+  {
+    "id": "mh-finance-a-car",
+    "host": "moneyhelper.org.uk",
+    "title": "What's the best way to finance buying a car?",
+    "url": "https://www.moneyhelper.org.uk/en/everyday-money/buying-and-running-a-car/whats-the-best-way-to-finance-buying-a-car"
+  },
+  {
+    "id": "mh-car-pcp",
+    "host": "moneyhelper.org.uk",
+    "title": "Buying a car with Personal Contract Purchase (PCP)",
+    "url": "https://www.moneyhelper.org.uk/en/everyday-money/buying-and-running-a-car/financing-buying-car-personal-contract-purchase-pcp"
+  },
+  {
+    "id": "mh-switch-bank-account",
+    "host": "moneyhelper.org.uk",
+    "title": "How to open, switch or close your bank account",
+    "url": "https://www.moneyhelper.org.uk/en/everyday-money/banking/how-to-open-switch-or-close-your-bank-account"
+  },
+  {
+    "id": "mse-best-bank-accounts",
+    "host": "moneysavingexpert.com",
+    "title": "Best current accounts (switching incentives)",
+    "url": "https://www.moneysavingexpert.com/banking/compare-best-bank-accounts/"
+  },
+  {
+    "id": "ofgem-price-cap",
+    "host": "ofgem.gov.uk",
+    "title": "Energy price cap",
+    "url": "https://www.ofgem.gov.uk/energy-price-cap"
+  }
+]
